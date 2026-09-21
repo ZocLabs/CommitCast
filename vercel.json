@@ -1,0 +1,10 @@
+{
+  "framework": null,
+  "installCommand": "echo skip-install",
+  "buildCommand": "echo skip-build",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/linkedin/callback", "destination": "/api/linkedin/callback" },
+    { "source": "/linkedin/start", "destination": "/api/linkedin/start" }
+  ]
+}

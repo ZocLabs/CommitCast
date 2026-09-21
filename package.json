@@ -1,0 +1,51 @@
+{
+  "name": "commitcast",
+  "version": "1.0.0",
+  "description": "AI-powered git commit to social media and architecture diagram generator",
+  "type": "module",
+  "bin": {
+    "commitcast": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "preview": "tsx src/index.ts --dry-run",
+    "build": "tsc",
+    "test": "node --import tsx --test src/codeRenderer.test.ts",
+    "prepublishOnly": "npm run build && npm test",
+    "setup": "playwright install chromium"
+  },
+  "keywords": [
+    "git",
+    "ai",
+    "linkedin",
+    "twitter",
+    "developer-marketing",
+    "build-in-public"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.17",
+    "@inquirer/prompts": "^7.8.4",
+    "@mermaid-js/mermaid-cli": "^11.6.0",
+    "ai": "^5.0.29",
+    "axios": "^1.11.0",
+    "commander": "^14.0.0",
+    "dotenv": "^16.6.1",
+    "playwright": "^1.55.0",
+    "simple-git": "^3.28.0",
+    "twitter-api-v2": "^1.24.0",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

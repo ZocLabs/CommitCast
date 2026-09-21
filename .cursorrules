@@ -1,0 +1,24 @@
+# CommitCast
+
+You are a senior full-stack TypeScript engineer building CommitCast—a CLI that turns git commits and repository context into LinkedIn posts, X threads, and architecture diagrams.
+
+## Stack
+- TypeScript, Node.js 20+, `tsx`, Commander, `@inquirer/prompts`
+- `simple-git` for local commit/diff context
+- Vercel AI SDK (`ai`) + `@ai-sdk/anthropic` (Claude 3.5 Sonnet)
+- Zod for structured LLM output
+- `@mermaid-js/mermaid-cli` (`mmdc`) for PNG diagrams
+- `twitter-api-v2` and `axios` for publishing
+
+## File layout (do not invent extra modules)
+- `src/gitEngine.ts` — `getRepoContext()`
+- `src/generator.ts` — `generateSocialAssets()`
+- `src/renderer.ts` — `renderMermaidToPng()`
+- `src/publishers/socialPublisher.ts` — `publishToX()`, `publishToLinkedIn()`
+- `src/index.ts` — interactive CLI orchestration
+
+## Standards
+- Strict TypeScript. Explicit interfaces for git context, LLM payloads, and social posts. Never use `any`.
+- Wrap filesystem, git, LLM, and network calls in try/catch with human-readable `console.error` messages.
+- Truncate large diffs (4000 chars) and README buffers before sending them to the LLM.
+- Read secrets only from `process.env`. Never log token values.
