@@ -1,4 +1,4 @@
-import { linkedInRedirectUri, requireEnv, type VercelRequest, type VercelResponse } from "./_shared";
+import { linkedInRedirectUri, requireEnv, type VercelRequest, type VercelResponse } from "./_shared.js";
 
 export default async function handler(request: VercelRequest, response: VercelResponse): Promise<void> {
   try {
