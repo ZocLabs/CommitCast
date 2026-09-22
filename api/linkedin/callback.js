@@ -1,6 +1,6 @@
-import { linkedInRedirectUri, requireEnv, type VercelRequest, type VercelResponse } from "./_shared.js";
+import { linkedInRedirectUri, requireEnv } from "./_shared.js";
 
-export default async function handler(request: VercelRequest, response: VercelResponse): Promise<void> {
+export default async function handler(request, response) {
   try {
     const code = firstQuery(request.query.code);
     const error = firstQuery(request.query.error);
@@ -29,7 +29,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
     });
-    const payload = (await tokenResponse.json()) as LinkedInTokenResponse;
+    const payload = await tokenResponse.json();
 
     if (!tokenResponse.ok || !payload.access_token) {
       html(
@@ -55,21 +55,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 }
 
-interface LinkedInTokenResponse {
-  access_token?: string;
-  expires_in?: number;
-  error?: string;
-  error_description?: string;
-}
-
-function firstQuery(value: string | string[] | undefined): string | undefined {
+function firstQuery(value) {
   if (Array.isArray(value)) {
     return value[0];
   }
   return value;
 }
 
-function html(response: VercelResponse, status: number, body: string): void {
+function html(response, status, body) {
   response.statusCode = status;
   response.setHeader("Content-Type", "text/html; charset=utf-8");
   response.end(`<!DOCTYPE html>
@@ -78,7 +71,7 @@ function html(response: VercelResponse, status: number, body: string): void {
 </head><body>${body}</body></html>`);
 }
 
-function escapeHtml(value: string): string {
+function escapeHtml(value) {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

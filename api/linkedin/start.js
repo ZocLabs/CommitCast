@@ -1,6 +1,6 @@
-import { linkedInAuthorizeUrl, type VercelRequest, type VercelResponse } from "./_shared.js";
+import { linkedInAuthorizeUrl } from "./_shared.js";
 
-export default function handler(request: VercelRequest, response: VercelResponse): void {
+export default function handler(request, response) {
   try {
     response.redirect(302, linkedInAuthorizeUrl(request));
   } catch (error) {

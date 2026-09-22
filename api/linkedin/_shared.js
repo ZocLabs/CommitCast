@@ -1,19 +1,4 @@
-interface VercelRequest {
-  method?: string;
-  query: Record<string, string | string[] | undefined>;
-  headers: Record<string, string | string[] | undefined>;
-}
-
-interface VercelResponse {
-  statusCode?: number;
-  setHeader(name: string, value: string): void;
-  redirect(statusOrUrl: number | string, url?: string): void;
-  status(code: number): VercelResponse;
-  send(body: string): void;
-  end(body?: string): void;
-}
-
-export function linkedInRedirectUri(request: VercelRequest): string {
+export function linkedInRedirectUri(request) {
   const configured = process.env.LINKEDIN_REDIRECT_URI?.trim();
   if (configured) {
     return configured;
@@ -31,7 +16,7 @@ export function linkedInRedirectUri(request: VercelRequest): string {
   return `${protocol}://${host.replace(/^https?:\/\//, "")}/api/linkedin/callback`;
 }
 
-export function linkedInAuthorizeUrl(request: VercelRequest): string {
+export function linkedInAuthorizeUrl(request) {
   const clientId = requireEnv("LINKEDIN_CLIENT_ID");
   const params = new URLSearchParams({
     response_type: "code",
@@ -44,7 +29,7 @@ export function linkedInAuthorizeUrl(request: VercelRequest): string {
   return `https://www.linkedin.com/oauth/v2/authorization?${params.toString()}`;
 }
 
-export function requireEnv(name: string): string {
+export function requireEnv(name) {
   const value = process.env[name];
   if (!value || value.trim() === "") {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -52,11 +37,9 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-function headerValue(value: string | string[] | undefined): string | undefined {
+function headerValue(value) {
   if (Array.isArray(value)) {
     return value[0];
   }
   return value;
 }
-
-export type { VercelRequest, VercelResponse };
