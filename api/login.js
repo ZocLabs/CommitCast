@@ -39,7 +39,7 @@ export default async function handler(request, response) {
       `<h1>CommitCast</h1>
        <p>Enter the site password to connect LinkedIn for Ittisal.</p>
        ${errored ? "<p class=\"error\">Wrong password.</p>" : ""}
-       <form method="post" action="/login">
+       <form method="post" action="/api/login">
          <input type="hidden" name="next" value="${escapeAttr(next)}" />
          <label>Password <input type="password" name="password" autocomplete="current-password" autofocus required /></label>
          <button type="submit">Log in</button>
@@ -52,7 +52,14 @@ export default async function handler(request, response) {
 }
 
 async function readForm(request) {
-  if (request.body && typeof request.body === "object") {
+  const contentType = headerContentType(request);
+
+  if (typeof request.formData === "function" && contentType.includes("form")) {
+    const form = await request.formData();
+    return Object.fromEntries(form.entries());
+  }
+
+  if (request.body && typeof request.body === "object" && !Buffer.isBuffer(request.body) && typeof request.body.pipe !== "function") {
     return request.body;
   }
 
@@ -60,11 +67,34 @@ async function readForm(request) {
     return Object.fromEntries(new URLSearchParams(request.body));
   }
 
-  const chunks = [];
-  for await (const chunk of request) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  if (Buffer.isBuffer(request.body)) {
+    return Object.fromEntries(new URLSearchParams(request.body.toString("utf8")));
   }
-  return Object.fromEntries(new URLSearchParams(Buffer.concat(chunks).toString("utf8")));
+
+  if (typeof request.on === "function") {
+    const chunks = [];
+    await new Promise((resolve, reject) => {
+      request.on("data", (chunk) => {
+        chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+      });
+      request.on("end", resolve);
+      request.on("error", reject);
+    });
+    if (chunks.length > 0) {
+      return Object.fromEntries(new URLSearchParams(Buffer.concat(chunks).toString("utf8")));
+    }
+  }
+
+  return {};
+}
+
+function headerContentType(request) {
+  const headers = request.headers;
+  if (headers && typeof headers.get === "function") {
+    return headers.get("content-type") ?? "";
+  }
+  const value = headers?.["content-type"] ?? headers?.["Content-Type"];
+  return Array.isArray(value) ? (value[0] ?? "") : String(value ?? "");
 }
 
 function firstQuery(value) {
