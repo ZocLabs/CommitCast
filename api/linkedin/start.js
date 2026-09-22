@@ -1,9 +1,15 @@
+import { requireAuth } from "../_auth.js";
+
 const DEFAULT_SCOPES = "openid profile email w_member_social";
 const ORGANIZATION_SCOPES =
   "openid profile email w_member_social w_organization_social r_organization_social";
 
 export default function handler(request, response) {
   try {
+    if (!requireAuth(request, response)) {
+      return;
+    }
+
     const clientId = process.env.LINKEDIN_CLIENT_ID;
     if (!clientId) {
       throw new Error("Missing required environment variable: LINKEDIN_CLIENT_ID");

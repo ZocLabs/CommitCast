@@ -1,5 +1,11 @@
+import { requireAuth } from "../_auth.js";
+
 export default async function handler(request, response) {
   try {
+    if (!requireAuth(request, response)) {
+      return;
+    }
+
     const code = firstQuery(request.query.code);
     const error = firstQuery(request.query.error);
     const description = firstQuery(request.query.error_description);

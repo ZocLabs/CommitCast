@@ -81,6 +81,8 @@ Copy `.env.example` to `.env` in the repo you want to post from. CommitCast read
 | Variable | Required for | Notes |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | Generation | Claude 3.5 Sonnet (`claude-3-5-sonnet-20241022`) |
+| `COMMITCAST_SITE_PASSWORD` | Vercel login | Password for https://commitcast.vercel.app (never commit) |
+| `COMMITCAST_SESSION_SECRET` | Vercel login | Cookie signing secret; generated separately from the password |
 | `LINKEDIN_CLIENT_ID` | LinkedIn OAuth app | Developer app client ID |
 | `LINKEDIN_CLIENT_SECRET` | LinkedIn OAuth app | Developer app secret (never commit) |
 | `LINKEDIN_ORGANIZATION_URN` | LinkedIn company publish | `urn:li:organization:86663814` or the numeric company id |
@@ -107,9 +109,9 @@ CommitCast lives under **[ZocLabs](https://github.com/ZocLabs)** and posts to th
 
 ### LinkedIn OAuth on Vercel
 
-The LinkedIn developer app needs an HTTPS redirect. CommitCast exposes that on Vercel:
+The LinkedIn developer app needs an HTTPS redirect. CommitCast exposes that on Vercel, behind a password at `/login` (`COMMITCAST_SITE_PASSWORD`).
 
-1. Open `/api/linkedin/start` on the deployed project
+1. Log in at https://commitcast.vercel.app/login, then open `/api/linkedin/start`
 2. Approve organization posting as an Ittisal admin
 3. Copy `LINKEDIN_ACCESS_TOKEN` from `/api/linkedin/callback` into local `.env` (never commit it)
 
