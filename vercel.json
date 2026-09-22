@@ -2,6 +2,7 @@
   "framework": null,
   "installCommand": "node -e \"process.stdout.write('skip-install')\"",
   "buildCommand": "node -e \"process.stdout.write('skip-build')\"",
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/login", "destination": "/api/login" },
     { "source": "/logout", "destination": "/api/logout" },
