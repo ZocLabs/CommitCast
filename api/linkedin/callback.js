@@ -1,5 +1,3 @@
-import { linkedInRedirectUri, requireEnv } from "./_shared.js";
-
 export default async function handler(request, response) {
   try {
     const code = firstQuery(request.query.code);
@@ -16,12 +14,14 @@ export default async function handler(request, response) {
       return;
     }
 
+    const clientId = requireEnv("LINKEDIN_CLIENT_ID");
+    const clientSecret = requireEnv("LINKEDIN_CLIENT_SECRET");
     const body = new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      redirect_uri: linkedInRedirectUri(request),
-      client_id: requireEnv("LINKEDIN_CLIENT_ID"),
-      client_secret: requireEnv("LINKEDIN_CLIENT_SECRET"),
+      redirect_uri: redirectUri(request),
+      client_id: clientId,
+      client_secret: clientSecret,
     });
 
     const tokenResponse = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
@@ -53,6 +53,39 @@ export default async function handler(request, response) {
     const message = error instanceof Error ? error.message : String(error);
     html(response, 500, `<h1>OAuth callback error</h1><p>${escapeHtml(message)}</p>`);
   }
+}
+
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value || value.trim() === "") {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+function redirectUri(request) {
+  const configured = process.env.LINKEDIN_REDIRECT_URI?.trim();
+  if (configured) {
+    return configured;
+  }
+
+  const proto = headerValue(request.headers["x-forwarded-proto"]) ?? "https";
+  const host =
+    headerValue(request.headers["x-forwarded-host"]) ??
+    headerValue(request.headers.host) ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+    process.env.VERCEL_URL ??
+    "localhost:4173";
+
+  const protocol = host.includes("localhost") ? "http" : proto;
+  return `${protocol}://${host.replace(/^https?:\/\//, "")}/api/linkedin/callback`;
+}
+
+function headerValue(value) {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
 }
 
 function firstQuery(value) {
