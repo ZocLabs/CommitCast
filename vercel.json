@@ -1,7 +1,7 @@
 {
   "framework": null,
-  "installCommand": "echo skip-install",
-  "buildCommand": "echo skip-build",
+  "installCommand": "node -e \"process.stdout.write('skip-install')\"",
+  "buildCommand": "node -e \"process.stdout.write('skip-build')\"",
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/linkedin/callback", "destination": "/api/linkedin/callback" },
