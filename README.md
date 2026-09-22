@@ -84,7 +84,8 @@ Copy `.env.example` to `.env` in the repo you want to post from. CommitCast read
 | `LINKEDIN_CLIENT_ID` | LinkedIn OAuth app | Developer app client ID |
 | `LINKEDIN_CLIENT_SECRET` | LinkedIn OAuth app | Developer app secret (never commit) |
 | `LINKEDIN_ORGANIZATION_URN` | LinkedIn company publish | `urn:li:organization:86663814` or the numeric company id |
-| `LINKEDIN_ACCESS_TOKEN` | LinkedIn publish | Member OAuth token with `w_organization_social` |
+| `LINKEDIN_ACCESS_TOKEN` | LinkedIn publish | Member OAuth token. Company posts also need `w_organization_social` |
+| `LINKEDIN_OAUTH_SCOPES` | LinkedIn OAuth | Optional override. Default is Sign In + Share: `openid profile email w_member_social` |
 | `LINKEDIN_PERSON_URN` | LinkedIn personal publish | Optional fallback if no organization URN is set |
 | `TWITTER_API_KEY` | X publish | OAuth 1.0a app key |
 | `TWITTER_API_SECRET` | X publish | OAuth 1.0a app secret |
@@ -115,10 +116,16 @@ The LinkedIn developer app needs an HTTPS redirect. CommitCast exposes that on V
 Add this exact redirect URL in the LinkedIn app **Auth** tab:
 
 ```
-https://<your-vercel-host>/api/linkedin/callback
+https://commitcast.vercel.app/api/linkedin/callback
 ```
 
-Enable the Community Management / organization posting products so the app can request `w_organization_social`.
+Auth will show **No permissions added** until you add Products. Request, in this order:
+
+1. **Sign In with LinkedIn using OpenID Connect** — `openid`, `profile`, `email`
+2. **Share on LinkedIn** — `w_member_social` (member posts)
+3. **Community Management API** — `w_organization_social` (Ittisal company page; LinkedIn reviews this)
+
+Then open `/api/linkedin/start` for member scopes, or `/api/linkedin/start?org=1` after Community Management is **Added**.
 
 Optional: set `LINKEDIN_REDIRECT_URI` on Vercel if you pin a custom domain.
 

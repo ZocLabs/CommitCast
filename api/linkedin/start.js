@@ -1,3 +1,7 @@
+const DEFAULT_SCOPES = "openid profile email w_member_social";
+const ORGANIZATION_SCOPES =
+  "openid profile email w_member_social w_organization_social r_organization_social";
+
 export default function handler(request, response) {
   try {
     const clientId = process.env.LINKEDIN_CLIENT_ID;
@@ -9,7 +13,7 @@ export default function handler(request, response) {
       response_type: "code",
       client_id: clientId,
       redirect_uri: redirectUri(request),
-      scope: "openid profile w_organization_social r_organization_social w_member_social",
+      scope: resolveScopes(request),
       state: "commitcast",
     });
 
@@ -20,6 +24,27 @@ export default function handler(request, response) {
     response.setHeader("Content-Type", "text/plain; charset=utf-8");
     response.end(`CommitCast LinkedIn OAuth failed: ${message}`);
   }
+}
+
+function resolveScopes(request) {
+  const configured = process.env.LINKEDIN_OAUTH_SCOPES?.trim();
+  if (configured) {
+    return configured;
+  }
+
+  const org = firstQuery(request.query?.org);
+  if (org === "1" || org === "true") {
+    return ORGANIZATION_SCOPES;
+  }
+
+  return DEFAULT_SCOPES;
+}
+
+function firstQuery(value) {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
 }
 
 function redirectUri(request) {

@@ -5,7 +5,22 @@ export default async function handler(request, response) {
     const description = firstQuery(request.query.error_description);
 
     if (error) {
-      html(response, 400, `<h1>LinkedIn denied access</h1><p>${escapeHtml(error)}: ${escapeHtml(description ?? "")}</p>`);
+      const isScope = error === "invalid_scope_error" || error === "unauthorized_scope_error";
+      html(
+        response,
+        400,
+        isScope
+          ? `<h1>LinkedIn scopes are not enabled</h1>
+             <p>${escapeHtml(error)}: ${escapeHtml(description ?? "")}</p>
+             <p>The Auth tab stays empty until you add Products. On <strong>Ittisal-Company-Publisher → Products</strong>, add:</p>
+             <ol>
+               <li><strong>Sign In with LinkedIn using OpenID Connect</strong> — unlocks <code>openid</code>, <code>profile</code>, <code>email</code></li>
+               <li><strong>Share on LinkedIn</strong> — unlocks <code>w_member_social</code></li>
+               <li><strong>Community Management API</strong> — required for the Ittisal company page; LinkedIn reviews this. Unlocks <code>w_organization_social</code></li>
+             </ol>
+             <p>After 1 and 2 show as Added, retry <a href="/api/linkedin/start">member connect</a>. After Community Management is approved, use <a href="/api/linkedin/start?org=1">organization connect</a>.</p>`
+          : `<h1>LinkedIn denied access</h1><p>${escapeHtml(error)}: ${escapeHtml(description ?? "")}</p>`,
+      );
       return;
     }
 
@@ -100,7 +115,7 @@ function html(response, status, body) {
   response.setHeader("Content-Type", "text/html; charset=utf-8");
   response.end(`<!DOCTYPE html>
 <html><head><meta charset="utf-8" /><title>CommitCast LinkedIn</title>
-<style>body{font-family:Segoe UI,system-ui,sans-serif;background:#0b0f19;color:#eef3ff;padding:40px;max-width:720px;margin:auto}pre{white-space:pre-wrap;word-break:break-all;background:#151b28;padding:16px;border-radius:12px}a{color:#7c5cff}</style>
+<style>body{font-family:Segoe UI,system-ui,sans-serif;background:#0b0f19;color:#eef3ff;padding:40px;max-width:720px;margin:auto}pre{white-space:pre-wrap;word-break:break-all;background:#151b28;padding:16px;border-radius:12px}a{color:#7c5cff}ol{padding-left:1.2rem}</style>
 </head><body>${body}</body></html>`);
 }
 

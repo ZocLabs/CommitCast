@@ -9,6 +9,8 @@
       main { max-width: 640px; margin: 0 auto; padding: 64px 24px; }
       a { color: #7c5cff; }
       .card { background: rgba(16,22,36,.6); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 24px; }
+      ol { padding-left: 1.2rem; }
+      code { font-size: 0.9em; }
     </style>
   </head>
   <body>
@@ -21,7 +23,16 @@
           <a href="https://github.com/ZocLabs/ittisal">ittisal</a> ·
           <a href="https://github.com/ZocLabs/Ittisal_Website">Ittisal_Website</a>
         </p>
-        <p><a href="/api/linkedin/start">Connect LinkedIn (organization)</a></p>
+        <p>Before connecting, add these on the LinkedIn app <strong>Products</strong> tab (Auth stays empty until you do):</p>
+        <ol>
+          <li>Sign In with LinkedIn using OpenID Connect</li>
+          <li>Share on LinkedIn</li>
+          <li>Community Management API (review required for company-page posts)</li>
+        </ol>
+        <p>
+          <a href="/api/linkedin/start">Connect LinkedIn (member)</a><br />
+          <a href="/api/linkedin/start?org=1">Connect LinkedIn (organization)</a>
+        </p>
       </div>
     </main>
   </body>
